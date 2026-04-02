@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 
+import com.sun.tools.javac.Main;
+
 public class TestZipCode {
 
 	public static void main(String[] args) throws IOException {
@@ -14,7 +16,7 @@ public class TestZipCode {
 		BufferedReader br        = new BufferedReader(fr);
 		
 		Scanner        in        = new Scanner(System.in);
-		System.out.println("시/도 : 1 , 구/군(도>시) : 2 , 동/건물 : 3  전체키워드검색 : 4   번호를 입력하세요.");
+		System.out.println("시/도 : 1 , 구/군(도>시) : 2 , 동/건물 : 3  전체키워드검색 : 4  시/도 리스트: 5  구/군 : 6 번호를 입력하세요.");
 		int            findnum   = in.nextInt();
 		in.nextLine();
 		switch (findnum) {
@@ -22,6 +24,8 @@ public class TestZipCode {
 		case 2 : System.out.println("검색할 구/군(시) 을 입력하세요"); break;
 		case 3 : System.out.println("검색할 동, 혹은 건물명을 입력하세요"); break;
 		case 4 : System.out.println("검색할 키워드를 입력하세요."); break;
+		case 5 : System.out.println("엔터로 검색시작"); break;
+		case 6 : System.out.println("엔터로 검색시작"); break;
 		default : System.out.println("비 검색 모드"); break;
 		}
 		String         find      = in.nextLine();
@@ -33,6 +37,7 @@ public class TestZipCode {
 		
 		int tot    = 0;
 		int search = 0;
+		String         test      = "";
 		while ( (line=br.readLine()) != null ) {
 			tot++;
 			String [] li    = line.split(",");
@@ -45,33 +50,53 @@ public class TestZipCode {
 			
 			if (findnum==1) {
 				if ( sido.contains(find) ) {
-					String fmt = "%s  %s  %s  %s  %s      %d";
+					String fmt = "[%s]  %s  %s  %s  %s      %d";
 					String msg = String.format(fmt, zip,sido,gugun,dong,bunji,seq);
 					System.out.println(msg);
 					search++;
 				}
 			} else if (findnum==2) {
 				if ( gugun.contains(find) ) {
-					String fmt = "%s  %s  %s  %s  %s      %d";
+					String fmt = "[%s]  %s  %s  %s  %s      %d";
 					String msg = String.format(fmt, zip,sido,gugun,dong,bunji,seq);
 					System.out.println(msg);
 					search++;
 				}		
 			} else if (findnum==3) {
 				if ( dong.contains(find) ) {
-					String fmt = "%s  %s  %s  %s  %s      %d";
+					String fmt = "[%s]  %s  %s  %s  %s      %d";
 					String msg = String.format(fmt, zip,sido,gugun,dong,bunji,seq);
 					System.out.println(msg);
 					search++;
 				}
 			} else if (findnum==4) {
 				if ( line.contains(find) ) {
-					String fmt = "%s  %s  %s  %s  %s      %d";
+					String fmt = "[%s]  %s  %s  %s  %s      %d";
 					String msg = String.format(fmt, zip,sido,gugun,dong,bunji,seq);
 					System.out.println(msg);
 					search++;
 				}
+			} else if (findnum==5) {
+				if ( !test.equals(sido) ) {
+					int count  = sidocount(sido);
+					String fmt = " 시/도 : %s   내용 수 : %d";
+					String msg = String.format(fmt, sido,count);
+					System.out.println(msg);
+					test = sido;
+					search++;
+				} 
+			} else if (findnum==6) {
+				if ( !test.equals(sido+gugun) ) {
+					int count  = guguncount(sido+gugun);
+					String fmt = " 구/군 : %s   내용 수 : %d";
+					String msg = String.format(fmt, sido+gugun,count);
+					System.out.println(msg);
+					test = sido+gugun;
+					search++;
+				} 
 			}
+			
+			
 		} // while end
 		
 		System.out.println();
@@ -85,6 +110,74 @@ public class TestZipCode {
 		br.close();
 		
 		
+	}
+
+	private static int sidocount(String find) throws IOException {
+
+		String         path      = "D:/dev/java/PrjIO/src/ex04/";
+		String         filename  = "zipcode.csv";
+		FileReader     fr        = new FileReader(path + filename);
+		BufferedReader br        = new BufferedReader(fr);
+		
+	
+		String         line      = "";
+		br.readLine();
+		
+		int search = 0;
+		while ( (line=br.readLine()) != null ) {
+			String [] li    = line.split(",");
+			String zip      = li[0].trim();
+			String sido     = li[1].trim();
+			String gugun    = li[2].trim();
+			String dong     = li[3];
+			String bunji    = li[4].trim();
+			int    seq      = Integer.parseInt(li[5].trim());
+			
+		
+			if ( sido.equals(find) ) {
+				search++;
+			}
+
+		} // while end
+
+		fr.close();
+		br.close();
+
+		return search;
+	}
+	
+	private static int guguncount(String find) throws IOException {
+		
+		String         path      = "D:/dev/java/PrjIO/src/ex04/";
+		String         filename  = "zipcode.csv";
+		FileReader     fr        = new FileReader(path + filename);
+		BufferedReader br        = new BufferedReader(fr);
+		
+		
+		String         line      = "";
+		br.readLine();
+		
+		int search = 0;
+		while ( (line=br.readLine()) != null ) {
+			String [] li    = line.split(",");
+			String zip      = li[0].trim();
+			String sido     = li[1].trim();
+			String gugun    = li[2].trim();
+			String dong     = li[3];
+			String bunji    = li[4].trim();
+			int    seq      = Integer.parseInt(li[5].trim());
+			
+			
+			if ( (sido+gugun).equals(find) ) {
+				search++;
+			}
+			
+		} // while end
+		
+		fr.close();
+		br.close();
+		
+		return search;
 	}
 
 }
